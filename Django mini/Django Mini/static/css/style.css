@@ -1,0 +1,36 @@
+body {
+    background-color: #f5f6fa;
+}
+.app-navbar {
+    background-color: #4f46e5;
+}
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.stat-card {
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+.stat-card.total { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
+.stat-card.count { background: linear-gradient(135deg, #059669, #10b981); }
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+.auth-card {
+    max-width: 420px;
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.category-badge {
+    font-size: 0.75rem;
+}

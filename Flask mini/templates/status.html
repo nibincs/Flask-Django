@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Challan {{ v.challan_no }} · Status</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="public-wrap">
+  <div class="public-card">
+    <div class="public-header">
+      <div class="siren">Traffic Enforcement · Public Status Check</div>
+      <h1>Challan {{ v.challan_no }}</h1>
+    </div>
+
+    <div class="challan" style="grid-template-columns: 1fr;">
+      <div class="status-banner {{ 'paid' if v.status == 'Paid' else 'unpaid' }}">
+        {{ 'Fine paid' if v.status == 'Paid' else 'Fine unpaid' }}
+      </div>
+      <div class="challan-body">
+        <span class="plate">{{ v.vehicle_number }}</span>
+
+        <div class="challan-field">
+          <span class="k">Violation</span>
+          <span class="violation-tag">{{ v.violation_type }}</span>
+        </div>
+        <div class="challan-field">
+          <span class="k">Location</span>
+          {{ v.location }}
+        </div>
+        <div class="challan-field">
+          <span class="k">Date of violation</span>
+          {{ v.violation_date.strftime('%d %b %Y') }}
+        </div>
+        <div class="challan-field">
+          <span class="k">Fine amount</span>
+          <div class="fine-amount"><span class="currency">₹</span>{{ "%.0f"|format(v.fine_amount) }}</div>
+        </div>
+        {% if v.status == 'Paid' and v.paid_at %}
+          <div class="challan-field">
+            <span class="k">Paid on</span>
+            {{ v.paid_at.strftime('%d %b %Y, %I:%M %p') }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:18px; font-size:12.5px; color:var(--steel);">
+      This is an official record from the Smart Traffic Violation Logger.<br>
+      Disputes can be raised at your local traffic police station.
+    </p>
+  </div>
+</div>
+</body>
+</html>

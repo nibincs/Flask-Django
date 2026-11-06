@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Violation History · Challan Desk{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Records</div>
+    <h1>Violation history</h1>
+    <p class="sub">Search by plate, or filter by status, type, and date range.</p>
+  </div>
+</div>
+
+<form class="filter-bar" method="GET" action="{{ url_for('history') }}">
+  <div class="field-group">
+    <label for="vehicle">Vehicle number</label>
+    <input class="mono-input" type="text" id="vehicle" name="vehicle" placeholder="TN 45 AB 1234" value="{{ filters.get('vehicle', '') }}">
+  </div>
+  <div class="field-group">
+    <label for="status">Status</label>
+    <select id="status" name="status">
+      <option value="">All</option>
+      <option value="Unpaid" {% if filters.get('status') == 'Unpaid' %}selected{% endif %}>Unpaid</option>
+      <option value="Paid" {% if filters.get('status') == 'Paid' %}selected{% endif %}>Paid</option>
+    </select>
+  </div>
+  <div class="field-group">
+    <label for="type">Violation type</label>
+    <select id="type" name="type">
+      <option value="">All</option>
+      {% for t in violation_types %}
+        <option value="{{ t }}" {% if filters.get('type') == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="field-group">
+    <label for="date_from">From</label>
+    <input type="date" id="date_from" name="date_from" value="{{ filters.get('date_from', '') }}">
+  </div>
+  <div class="field-group">
+    <label for="date_to">To</label>
+    <input type="date" id="date_to" name="date_to" value="{{ filters.get('date_to', '') }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="{{ url_for('history') }}" class="btn btn-outline">Reset</a>
+</form>
+
+{% if results %}
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>Challan No.</th>
+        <th>Vehicle</th>
+        <th>Violation</th>
+        <th>Location</th>
+        <th>Date</th>
+        <th>Fine</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in results %}
+      <tr>
+        <td style="font-family:var(--mono); font-size:12.5px;">{{ v.challan_no }}</td>
+        <td style="font-family:var(--mono); font-weight:700;">{{ v.vehicle_number }}</td>
+        <td>{{ v.violation_type }}</td>
+        <td>{{ v.location }}</td>
+        <td>{{ v.violation_date.strftime('%d %b %Y') }}</td>
+        <td>₹{{ "%.0f"|format(v.fine_amount) }}</td>
+        <td>
+          <span class="status-pill {{ 'paid' if v.status == 'Paid' else 'unpaid' }}">
+            <span class="dot"></span>{{ v.status }}
+          </span>
+        </td>
+        <td style="display:flex; gap:6px;">
+          <a href="{{ url_for('challan_detail', challan_no=v.challan_no) }}" class="btn btn-outline btn-sm">View</a>
+          <form method="POST" action="{{ url_for('toggle_status', violation_id=v.id) }}">
+            <button type="submit" class="btn btn-sm {{ 'btn-outline' if v.status == 'Paid' else 'btn-green' }}">
+              {{ 'Mark Unpaid' if v.status == 'Paid' else 'Mark Paid' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <div class="big">No matching challans</div>
+    <p>Try widening your search or clearing a filter.</p>
+  </div>
+{% endif %}
+{% endblock %}

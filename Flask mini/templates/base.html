@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Smart Traffic Violation Logger{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge"><span>TP</span></div>
+      <div class="brand-text">Challan Desk<small>Traffic Enforcement</small></div>
+    </div>
+
+    <nav class="nav-links">
+      <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+        <span class="dot"></span> Dashboard
+      </a>
+      <a class="nav-link {% if request.path == '/add' %}active{% endif %}" href="{{ url_for('add_violation') }}">
+        <span class="dot"></span> Log Violation
+      </a>
+      <a class="nav-link {% if request.path == '/history' %}active{% endif %}" href="{{ url_for('history') }}">
+        <span class="dot"></span> Violation History
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      {% if session.get('officer_name') %}
+        <span class="officer-name">Officer {{ session['officer_name'] }}</span>
+        <a class="logout-link" href="{{ url_for('logout') }}">Log out</a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <main class="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>
