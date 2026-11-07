@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Challan {{ v.challan_no }} · Challan Desk{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Digital challan</div>
+    <h1>{{ v.challan_no }}</h1>
+    <p class="sub">Scan the QR code below, or share the public link, to let the driver check payment status.</p>
+  </div>
+  <a href="{{ url_for('history') }}" class="btn btn-outline">&larr; Back to history</a>
+</div>
+
+<div class="challan">
+  <div class="challan-body">
+    <div class="challan-top">
+      <span class="challan-no">{{ v.challan_no }}</span>
+      <span class="challan-date">{{ v.violation_date.strftime('%d %b %Y') }}</span>
+    </div>
+
+    <span class="plate">{{ v.vehicle_number }}</span>
+
+    <div class="challan-field">
+      <span class="k">Violation</span>
+      <span class="violation-tag">{{ v.violation_type }}</span>
+    </div>
+
+    <div class="challan-field">
+      <span class="k">Location</span>
+      {{ v.location }}
+    </div>
+
+    <div class="challan-field">
+      <span class="k">Fine amount</span>
+      <div class="fine-amount"><span class="currency">₹</span>{{ "%.0f"|format(v.fine_amount) }}</div>
+    </div>
+  </div>
+
+  <div class="challan-stub">
+    <span class="stamp {{ 'paid' if v.status == 'Paid' else 'unpaid' }}">{{ v.status }}</span>
+    {% if v.qr_filename %}
+      <div class="qr-box">
+        <img src="{{ url_for('qr_code_file', filename=v.qr_filename) }}" alt="QR code linking to public status page for {{ v.challan_no }}">
+      </div>
+      <span class="qr-caption">Scan for status</span>
+    {% endif %}
+    <form method="POST" action="{{ url_for('toggle_status', violation_id=v.id) }}" style="width:100%;">
+      <button type="submit" class="btn btn-sm btn-block {{ 'btn-outline' if v.status == 'Paid' else 'btn-green' }}">
+        {{ 'Mark Unpaid' if v.status == 'Paid' else 'Mark Paid' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<p style="margin-top:18px; font-size:13px; color:var(--steel);">
+  Public link: <a href="{{ url_for('public_status', challan_no=v.challan_no, _external=True) }}" style="color:var(--amber);">{{ url_for('public_status', challan_no=v.challan_no, _external=True) }}</a>
+</p>
+{% endblock %}

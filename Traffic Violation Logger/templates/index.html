@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Challan Desk{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Duty overview</div>
+    <h1>Today at the desk</h1>
+    <p class="sub">A running tally of every challan logged through this terminal.</p>
+  </div>
+  <a href="{{ url_for('add_violation') }}" class="btn btn-primary">+ Log a violation</a>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card total">
+    <div class="stat-label">Total challans</div>
+    <div class="stat-value">{{ total }}</div>
+  </div>
+  <div class="stat-card unpaid">
+    <div class="stat-label">Unpaid</div>
+    <div class="stat-value">{{ unpaid }}</div>
+  </div>
+  <div class="stat-card paid">
+    <div class="stat-label">Paid</div>
+    <div class="stat-value">{{ paid }}</div>
+  </div>
+  <div class="stat-card money">
+    <div class="stat-label">Fines recovered</div>
+    <div class="stat-value">₹{{ "%.0f"|format(recovered) }}<span style="font-size:14px;color:var(--steel);"> / ₹{{ "%.0f"|format(total_fines) }}</span></div>
+  </div>
+</div>
+
+<h2 style="font-family:var(--display); text-transform:uppercase; font-size:16px; letter-spacing:0.04em; color:var(--steel); margin-bottom:14px;">Recently logged</h2>
+
+{% if recent %}
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>Challan No.</th>
+        <th>Vehicle</th>
+        <th>Violation</th>
+        <th>Location</th>
+        <th>Fine</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in recent %}
+      <tr>
+        <td style="font-family:var(--mono); font-size:12.5px;">{{ v.challan_no }}</td>
+        <td style="font-family:var(--mono); font-weight:700;">{{ v.vehicle_number }}</td>
+        <td>{{ v.violation_type }}</td>
+        <td>{{ v.location }}</td>
+        <td>₹{{ "%.0f"|format(v.fine_amount) }}</td>
+        <td>
+          <span class="status-pill {{ 'paid' if v.status == 'Paid' else 'unpaid' }}">
+            <span class="dot"></span>{{ v.status }}
+          </span>
+        </td>
+        <td><a href="{{ url_for('challan_detail', challan_no=v.challan_no) }}" class="btn btn-outline btn-sm">View</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="empty-state">
+    <div class="big">No challans logged yet</div>
+    <p>Once you log a violation, it'll show up here.</p>
+  </div>
+{% endif %}
+{% endblock %}

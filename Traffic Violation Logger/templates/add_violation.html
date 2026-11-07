@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Log Violation · Challan Desk{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">New entry</div>
+    <h1>Log a violation</h1>
+    <p class="sub">This creates a challan number and QR code automatically — mark it Unpaid until settled.</p>
+  </div>
+</div>
+
+<form class="form-card" method="POST" action="{{ url_for('add_violation') }}">
+  <div class="field-group">
+    <label for="vehicle_number">Vehicle number</label>
+    <input class="mono-input" type="text" id="vehicle_number" name="vehicle_number" placeholder="TN 45 AB 1234" required>
+  </div>
+
+  <div class="field-row">
+    <div class="field-group">
+      <label for="violation_type">Violation type</label>
+      <select id="violation_type" name="violation_type" required>
+        <option value="" disabled selected>Select a violation</option>
+        {% for t in violation_types %}
+          <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field-group">
+      <label for="fine_amount">Fine amount (₹)</label>
+      <input type="number" min="0" step="1" id="fine_amount" name="fine_amount" placeholder="500" required>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <label for="location">Location</label>
+    <input type="text" id="location" name="location" placeholder="Anna Salai, near Gemini Flyover" required>
+  </div>
+
+  <div class="field-group">
+    <label for="violation_date">Date of violation</label>
+    <input type="date" id="violation_date" name="violation_date" value="{{ today }}" required>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-block">Generate challan</button>
+</form>
+{% endblock %}
